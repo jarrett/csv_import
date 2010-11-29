@@ -14,7 +14,7 @@ module CsvImport
 
     if request.post?
       ActiveRecord::Base.transaction do
-        RAILS_DEFAULT_LOGGER.info("starting csv import")
+        ::Rails.logger.info("starting csv import")
         valid_headers = opts.delete(:valid_headers)
 
         FasterCSV.parse(params[:csv].read, DEFAULT_PARSE_OPTS.merge(opts)) do |row|
@@ -36,7 +36,7 @@ module CsvImport
         if @bad_rows.empty? && (@unknown_headers.empty? || params[:csv_ignore_unknown_columns])
           @imported = true
         else
-          RAILS_DEFAULT_LOGGER.info("rolling back csv import, contained errors")
+          ::Rails.logger.info("rolling back csv import, contained errors")
           raise ActiveRecord::Rollback
         end
       end
