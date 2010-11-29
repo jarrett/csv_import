@@ -1,0 +1,44 @@
+= CsvImport
+
+This Rails plugin provides a controller method called each_csv_row and
+an accompanying helper called csv_form.
+
+By default, when each_csv_row is called, any exceptions raised in the
+block will be rescued. The rows that triggered the exceptions will
+then be displayed in a table as part of the output from csv_form.
+
+You can turn off rescuing by calling each_csv_row(false).
+
+== Example
+
+# app/controllers/employees_controller.rb
+
+    class EmployeesController < ActionController::Base
+      include CsvImport
+
+      def create
+
+      end
+    
+      def import
+        Employee.destroy_all if params.has_key?('destroy_all_first')
+        each_csv_row do |row|
+          Employee.create!(row)
+        end
+      end
+    end
+
+# app/views/employees/import.html.erb
+
+    <h1>Import Employee Records</h1>
+
+    <% csv_form employees_path %> do
+
+      <!-- whatever you put in the optional
+      block will appear at the end of the form -->
+
+      <p>
+        <%= checkbox_tag :destroy_all_first %>
+        <%= label :destroy_all_first, 'Destroy existing records first?' %>
+      </p>
+    end
