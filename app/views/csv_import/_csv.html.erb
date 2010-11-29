@@ -1,55 +1,40 @@
-<% form_tag({}, {:multipart => true}) do %>
-	<p>Upload file</p>
-	<p>
-		<%= check_box_tag 'field_names_in_first_row', 1, true %>
-		<label for="field_names_in_first_row">Field names in first row</label>
-	</p>
-	<p><%= file_field_tag 'csv' %></p>
-	
-	<%= other_html %>
-	
-	<p><%= submit_tag  'Save' %></p>
+<%= form_tag url_for_options, {:multipart => true} do %>
+  <p>Upload CSV file:</p>
+  <p><%= file_field_tag 'csv' %></p>
+  <p><%= check_box_tag :csv_ignore_unknown_columns, true, false %> Ignore all unknown columns in uploaded CSV</p>
+
+  <%= other_html %>
+
+  <p><%= submit_tag 'Import' %></p>
 <% end %>
 
-<% if @rows_imported %>
-	<% unless @bad_rows.nil? %>
-		<h2><%= @bad_rows.length %> rows failed. <%= @rows_imported %> rows would have been imported successfully.</h2>
-		<p>Anytime there are bad rows, the entire import gets cancelled. This is so that you can make corrections and re-run the import without
-		manually rolling back the previous attempt.</p>
-	<% else %>
-		<h2><%= @rows_imported %> rows were imported successfully</h2>
-	<% end %>
-<% end %>
+<% if @rows_imported && ! @imported %>
+  <h2>Import Failed</h2>
 
-<% if @bad_rows %>
-	<h2>Bad rows in CSV</h2>
-	<table>
-		<tr>
-			<% @field_names.each do |field_name| %>
-				<th><%= h field_name %></th>
-			<% end %>
-			<th>Error</th>
-		</tr>
-		<% @bad_rows.each_with_index do |row, row_number| %>
-			<tr class="<%= cycle('even', 'odd') %>">
-				<% row.each do |cell| %>
-					<% if cell.is_a?(Exception) %>
-						<td>
-							<%= h cell.to_s %>
-							<p>
-								<a onclick="$('backtrace_<%= row_number %>').toggle();">Toggle backtrace</a>
-							</p>
-							<div id="backtrace_<%= row_number %>" style="display: none;">
-								<% cell.backtrace.each do |line| %>
-									<%= h line %>
-								<% end %>
-							</div>
-						</td>
-					<% else %>
-						<td><%= h cell %></td>
-					<% end %>
-				<% end %>
-			</tr>
-		<% end %>
-	</table>
+  <p><%= @bad_rows.length %> rows failed to import. <%= @rows_imported %> rows would have been imported successfully.</p>
+  <p>Anytime there are bad rows, the entire import gets cancelled. This is so that you can make corrections and re-run the import without manually rolling back the previous attempt.</p>
+
+  <% if @unknown_headers.any? %>
+    <h3>Unknown columns in CSV</h3>
+    <p>The following columns are not known: <%= @unknown_headers.map{|h| "&quot;#{h}&quot;"}.join(", ") %></p>
+  <% end %>
+
+  <% if @bad_rows.any? %>
+    <h3>Bad rows in uploaded CSV</h3>
+    <% @headers = @bad_rows.first.headers %>
+    <table>
+      <tr>
+        <% @headers.each do |field_name| %>
+          <th><%= h field_name %></th>
+        <% end %>
+      </tr>
+      <% @bad_rows.each_with_index do |row, row_number| %>
+        <tr class="<%= cycle('even', 'odd') %>">
+          <% @headers.each do |field_name| %>
+            <td><%= h row[field_name].to_s %></td>
+          <% end %>
+        </tr>
+      <% end %>
+    </table>
+  <% end %>
 <% end %>
