@@ -32,7 +32,7 @@ You can turn off rescuing by calling each_csv_row(false).
 
     <h1>Import Employee Records</h1>
 
-    <% csv_form employees_path %> do
+    <%= csv_form employees_path do %>
 
       <!-- whatever you put in the optional
       block will appear at the end of the form -->
@@ -41,4 +41,5 @@ You can turn off rescuing by calling each_csv_row(false).
         <%= checkbox_tag :destroy_all_first %>
         <%= label :destroy_all_first, 'Destroy existing records first?' %>
       </p>
-    end
+    <% end %>
+
