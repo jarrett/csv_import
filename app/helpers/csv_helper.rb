@@ -6,6 +6,6 @@ module CsvHelper
     else
       other_html = nil
     end
-    concat(render(:partial => 'csv_import/csv', :locals => {:url_for_options => url_for_options, :other_html => other_html}))
+    render :partial => 'csv_import/csv', :locals => {:url_for_options => url_for_options, :other_html => other_html}
   end
 end
