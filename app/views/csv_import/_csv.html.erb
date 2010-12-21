@@ -16,7 +16,7 @@
 
   <% if @unknown_headers.any? %>
     <h3>Unknown columns in CSV</h3>
-    <p>The following columns are not known: <%= @unknown_headers.map{|h| "&quot;#{h}&quot;"}.join(", ") %></p>
+    <p>The following columns are not known: <%= @unknown_headers.map{|header| "&quot;#{h(header)}&quot;"}.join(", ").html_safe %></p>
   <% end %>
 
   <% if @bad_rows.any? %>
@@ -25,13 +25,13 @@
     <table>
       <tr>
         <% @headers.each do |field_name| %>
-          <th><%= h field_name %></th>
+          <th><%= field_name %></th>
         <% end %>
       </tr>
       <% @bad_rows.each_with_index do |row, row_number| %>
         <tr class="<%= cycle('even', 'odd') %>">
           <% @headers.each do |field_name| %>
-            <td><%= h row[field_name].to_s %></td>
+            <td><%= row[field_name].to_s %></td>
           <% end %>
         </tr>
       <% end %>
