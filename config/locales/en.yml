@@ -1,0 +1,13 @@
+en:
+  csv_import:
+    upload_label: 'Upload CSV file:'
+    ignore_unknown_columns_label: 'Ignore all unknown columns in uploaded CSV'
+    submit_button: 'Import'
+
+    errors:
+      import_faild: 'Import Failed'
+      bad_rows: '%{bad_rows_length} rows failed to import. %{rows_imported} rows would have been imported successfully.'
+      exist_bad_rows: 'Anytime there are bad rows, the entire import gets cancelled. This is so that you can make corrections and re-run the import without manually rolling back the previous attempt.'
+      unknown_columns: 'Unknown columns in CSV'
+      following_unknown_columns: 'The following columns are not known: '
+      bad_rows_in_uploaded_csv: 'Bad rows in uploaded CSV'

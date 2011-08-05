@@ -1,0 +1,13 @@
+ja:
+  csv_import:
+    upload_label: 'CSVファイルのアップロード：'
+    ignore_unknown_columns_label: 'アップロードされたCSVファイルに、不明な欄があった場合、無視する'
+    submit_button: 'インポート'
+
+    errors:
+      import_faild: 'インポートに失敗しました'
+      bad_rows: '%{bad_rows_length}列のインポートに失敗し、%{rows_imported}列のインポートに成功しました。'
+      exist_bad_rows: 'インポートに失敗した場合、全てのインポートはキャンセルされます。CSVファイルの修正後、再度アップロードしてください。'
+      unknown_columns: '不明な欄'
+      following_unknown_columns: '次の欄は不明です: '
+      bad_rows_in_uploaded_csv: '不正な列'
