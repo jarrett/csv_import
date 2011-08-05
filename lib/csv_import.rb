@@ -1,4 +1,8 @@
-require 'fastercsv'
+if RUBY_VERSION =~ /1.8/
+  require 'fastercsv'
+else
+  require 'csv'
+end
 
 # Include this in a controller
 module CsvImport
@@ -17,7 +21,7 @@ module CsvImport
         ::Rails.logger.info("starting csv import")
         valid_headers = opts.delete(:valid_headers)
 
-        FasterCSV.parse(params[:csv].read, DEFAULT_PARSE_OPTS.merge(opts)) do |row|
+        (RUBY_VERSION =~ /1.8/ ?  FasterCSV : CSV).parse(params[:csv].read, DEFAULT_PARSE_OPTS.merge(opts)) do |row|
           begin
             row_data = row.to_hash
             if valid_headers
