@@ -42,7 +42,7 @@ module CsvImport
           if @bad_rows.empty? && (@unknown_headers.empty? || params[:csv_ignore_unknown_columns])
             @imported = true
           end
-        rescue err
+        rescue
           @bad_csv = true
         end
 
