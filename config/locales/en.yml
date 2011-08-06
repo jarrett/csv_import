@@ -6,6 +6,7 @@ en:
 
     errors:
       import_faild: 'Import Failed'
+      bad_csv: 'The uploaded file contained severe errors and could not be processed. Please make sure it is formatted correctly and contains headers.'
       bad_rows: '%{bad_rows_length} rows failed to import. %{rows_imported} rows would have been imported successfully.'
       exist_bad_rows: 'Anytime there are bad rows, the entire import gets cancelled. This is so that you can make corrections and re-run the import without manually rolling back the previous attempt.'
       unknown_columns: 'Unknown columns in CSV'

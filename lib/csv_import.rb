@@ -12,6 +12,7 @@ module CsvImport
 
   def each_csv_row(opts = {})
     @rows_imported = 0
+    @bad_csv = false
     @bad_rows = []
     @unknown_headers = Set.new
     @imported = false
@@ -21,25 +22,31 @@ module CsvImport
         ::Rails.logger.info("starting csv import")
         valid_headers = opts.delete(:valid_headers)
 
-        (RUBY_VERSION =~ /1.8/ ?  FasterCSV : CSV).parse(params[:csv].read, DEFAULT_PARSE_OPTS.merge(opts)) do |row|
-          begin
-            row_data = row.to_hash
-            if valid_headers
-              row_data.delete_if {|header, value| ! valid_headers.include?(header) }
-              @unknown_headers.merge(row.headers - row_data.keys)
+        begin
+          (RUBY_VERSION =~ /1.8/ ?  FasterCSV : CSV).parse(params[:csv].read, DEFAULT_PARSE_OPTS.merge(opts)) do |row|
+            begin
+              row_data = row.to_hash
+              if valid_headers
+                row_data.delete_if {|header, value| ! valid_headers.include?(header) }
+                @unknown_headers.merge(row.headers - row_data.keys)
+              end
+              obj = yield row_data
+              obj.save! if obj && (obj.new_record? || obj.changed?)
+              @rows_imported += 1
+            rescue ActiveRecord::ActiveRecordError, ActiveRecord::UnknownAttributeError => exc
+              row[:error] = exc
+              @bad_rows << row
             end
-            obj = yield row_data
-            obj.save! if obj && (obj.new_record? || obj.changed?)
-            @rows_imported += 1
-          rescue ActiveRecord::ActiveRecordError, ActiveRecord::UnknownAttributeError => exc
-            row[:error] = exc
-            @bad_rows << row
           end
+
+          if @bad_rows.empty? && (@unknown_headers.empty? || params[:csv_ignore_unknown_columns])
+            @imported = true
+          end
+        rescue err
+          @bad_csv = true
         end
 
-        if @bad_rows.empty? && (@unknown_headers.empty? || params[:csv_ignore_unknown_columns])
-          @imported = true
-        else
+        unless @imported
           ::Rails.logger.info("rolling back csv import, contained errors")
           raise ActiveRecord::Rollback
         end
