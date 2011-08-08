@@ -6,7 +6,7 @@ ja:
 
     errors:
       import_faild: 'インポートに失敗しました'
-      bad_csv: 'The uploaded file contained severe errors and could not be processed. Please make sure it is formatted correctly and contains headers.'
+      bad_csv: 'CSVファイルにエラーがあったため、アップロードに失敗しました。CSVのフォーマット、値などをご確認のうえ、再度アップロードお願いいたします。'
       bad_rows: '%{bad_rows_length}列のインポートに失敗し、%{rows_imported}列のインポートに成功しました。'
       exist_bad_rows: 'インポートに失敗した場合、全てのインポートはキャンセルされます。CSVファイルの修正後、再度アップロードしてください。'
       unknown_columns: '不明な欄'
