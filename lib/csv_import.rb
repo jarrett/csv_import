@@ -1,11 +1,9 @@
-if RUBY_VERSION =~ /1.8/
-  require 'fastercsv'
-else
-  require 'csv'
-end
+require 'csv'
 
 # Include this in a controller
 module CsvImport
+  class Engine < Rails::Engine
+  end
   DEFAULT_PARSE_OPTS = { :headers => true, :header_converters => :symbol }
 
   private
@@ -23,7 +21,7 @@ module CsvImport
         valid_headers = opts.delete(:valid_headers)
 
         begin
-          (RUBY_VERSION =~ /1.8/ ?  FasterCSV : CSV).parse(params[:csv].read, DEFAULT_PARSE_OPTS.merge(opts)) do |row|
+          CSV.parse(params[:csv].read, DEFAULT_PARSE_OPTS.merge(opts)) do |row|
             begin
               row_data = row.to_hash
               if valid_headers

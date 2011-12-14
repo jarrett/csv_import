@@ -1,3 +1,4 @@
+require 'haml'
 module CsvHelper
   # The optional block allows you to pass in extra HTML that will be inserted after the CSV form fields but before the submit button.
   def csv_form(url_for_options = {}, &block)
