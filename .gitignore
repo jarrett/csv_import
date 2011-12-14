@@ -3,3 +3,6 @@
 Gemfile.lock
 pkg/*
 .rvmrc
+log
+spec/fake/public
+spec/fake/tmp
