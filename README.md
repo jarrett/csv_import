@@ -1,4 +1,4 @@
-= CsvImport
+# CsvImport
 
 This Rails plugin provides a controller method called each_csv_row and
 an accompanying helper called csv_form.
@@ -9,37 +9,35 @@ then be displayed in a table as part of the output from csv_form.
 
 You can turn off rescuing by calling each_csv_row(false).
 
-== Example
+Note that we have adapted this version to our needs for [Doorkeeper](http://www.doorkeeperhq.com/), and we welcome any additions to make it more generic.
 
-# app/controllers/employees_controller.rb
+[ドアキーパー](http://www.doorkeeper.jp/)でも利用するので、日本語対応もできます！
 
-    class EmployeesController < ActionController::Base
+## Compatibility
+
+* Ruby 1.9
+* Rails 3
+
+## Usage
+
+    # app/controllers/members_controller.rb
+
+    class MembersController < ActionController::Base
       include CsvImport
 
       def create
-
-      end
-    
-      def import
-        Employee.destroy_all if params.has_key?('destroy_all_first')
         each_csv_row do |row|
-          Employee.create!(row)
+          Member.create!(row)
         end
       end
     end
 
-# app/views/employees/import.html.erb
+    # app/views/members/index.html.erb
 
-    <h1>Import Employee Records</h1>
+    <h1>Import Members</h1>
 
-    <%= csv_form employees_path do %>
+    <%= csv_form members_path do %>
 
       <!-- whatever you put in the optional
       block will appear at the end of the form -->
-
-      <p>
-        <%= checkbox_tag :destroy_all_first %>
-        <%= label :destroy_all_first, 'Destroy existing records first?' %>
-      </p>
     <% end %>
-
