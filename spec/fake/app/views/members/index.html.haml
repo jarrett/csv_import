@@ -1,0 +1,9 @@
+= csv_form members_path
+%table
+  %tr
+    %th Name
+    %th Email
+  - @members.each do |member|
+    %tr
+      %td= member.name
+      %td= member.email

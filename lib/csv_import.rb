@@ -1,36 +1,55 @@
 require 'csv'
+require 'rails'
 
 # Include this in a controller
 module CsvImport
-	def each_csv_row(rescue_exceptions = true)
-		if request.post?
-			@rows_imported = 0
-			ActiveRecord::Base.transaction do
-				bad = false
-				unless params['field_names_in_first_row'] == '1'
-					@field_names = []
-				end
-				CSV.parse(params['csv'].read).each_with_index do |row, i|
-					if i == 0 and params['field_names_in_first_row'] == '1'
-						@field_names = row
-					else
-						if rescue_exceptions
-							begin
-								yield row
-								@rows_imported += 1
-							rescue Exception => exc
-								@bad_rows ||= []
-								@bad_rows << (row + [exc])
-								bad = true
-							end
-						else
-							yield row
-							@rows_imported += 1
-						end
-					end
-				end
-				raise ActiveRecord::Rollback if bad
-			end
-		end
-	end
+  class Engine < Rails::Engine
+  end
+  DEFAULT_PARSE_OPTS = { :headers => true, :header_converters => :symbol }
+
+  private
+
+  def each_csv_row(opts = {})
+    @rows_imported = 0
+    @bad_csv = false
+    @bad_rows = []
+    @unknown_headers = Set.new
+    @imported = false
+
+    if request.post?
+      ActiveRecord::Base.transaction do
+        ::Rails.logger.info("starting csv import")
+        valid_headers = opts.delete(:valid_headers)
+
+        begin
+          CSV.parse(params[:csv].read.force_encoding("UTF-8"), DEFAULT_PARSE_OPTS.merge(opts)) do |row|
+            begin
+              row_data = row.to_hash
+              if valid_headers
+                row_data.delete_if {|header, value| ! valid_headers.include?(header) }
+                @unknown_headers.merge(row.headers - row_data.keys)
+              end
+              obj = yield row_data
+              obj.save! if obj && (obj.new_record? || obj.changed?)
+              @rows_imported += 1
+            rescue ActiveRecord::ActiveRecordError, ActiveRecord::UnknownAttributeError => e
+              row[:error] = e
+              @bad_rows << row
+            end
+          end
+
+          if @bad_rows.empty? && (@unknown_headers.empty? || params[:csv_ignore_unknown_columns])
+            @imported = true
+          end
+        rescue => e
+          @bad_csv = true
+        end
+
+        unless @imported
+          ::Rails.logger.info("rolling back csv import, contained errors")
+          raise ActiveRecord::Rollback
+        end
+      end
+    end
+  end
 end

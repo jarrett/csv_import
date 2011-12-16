@@ -1,0 +1,34 @@
+= form_tag url_for_options, {:multipart => true} do
+  %p
+    = I18n.t :upload_label, :scope => :csv_import
+    = file_field_tag 'csv'
+  %p
+    = check_box_tag :csv_ignore_unknown_columns, true, false
+    %label{:for => 'csv_ignore_unknown_columns'}= I18n.t :ignore_unknown_columns_label, :scope => :csv_import
+  %div.columns= other_html
+  %p= submit_tag I18n.t(:submit_button, :scope => :csv_import), :class => 'button'
+
+- if @rows_imported && ! @imported
+  %h2= I18n.t :import_faild, :scope => 'csv_import.errors'
+  - if @bad_csv
+    %p= I18n.t :bad_csv, :scope => 'csv_import.errors'
+  - else
+    %p= I18n.t :bad_rows, :scope => 'csv_import.errors', :bad_rows_length => @bad_rows.length, :rows_imported => @rows_imported
+    %p= I18n.t :exist_bad_rows, :scope => 'csv_import.errors'
+    - if @unknown_headers.any?
+      %h3= I18n.t :unknown_columns, :scope => 'csv_import.errors'
+      %p
+        = I18n.t :following_unknown_columns, :scope => 'csv_import.errors'
+        = @unknown_headers.map{|header| "&quot;#{h(header)}&quot;"}.join(", ").html_safe
+
+    - if @bad_rows.any?
+      %h3= I18n.t :bad_rows_in_uploaded_csv, :scope => 'csv_import.errors'
+      - @headers = @bad_rows.first.headers
+      %table
+        %tr
+          - @headers.each do |field_name|
+            %th= field_name
+        - @bad_rows.each_with_index do |row, row_number|
+          %tr{:class => cycle('even', 'odd')}
+            - @headers.each do |field_name|
+              %td= row[field_name].to_s
