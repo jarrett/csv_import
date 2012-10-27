@@ -10,7 +10,7 @@ then be displayed in a table as part of the output from csv_form.
 You can turn off rescuing by calling each_csv_row(false).
 
 Big thanks to [Doorkeeper](http://www.doorkeeperhq.com/) for their work
-on this plugin.
+updating this plugin to Rails 3.
 
 ## Compatibility
 
