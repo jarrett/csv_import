@@ -9,9 +9,8 @@ then be displayed in a table as part of the output from csv_form.
 
 You can turn off rescuing by calling each_csv_row(false).
 
-Note that we have adapted this version to our needs for [Doorkeeper](http://www.doorkeeperhq.com/), and we welcome any additions to make it more generic.
-
-[ドアキーパー](http://www.doorkeeper.jp/)でも利用するので、日本語対応もできます！
+Big thanks to [Doorkeeper](http://www.doorkeeperhq.com/) for their work
+on this plugin.
 
 ## Compatibility
 
